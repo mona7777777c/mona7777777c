@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉语词汇闪卡 - 48个新词版</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            width: 200px;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-front {
+            background: #f8f9fa;
+            font-size: 2.2em;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .long-text {
+            font-size: 1.6em;
+        }
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            text-align: center;
+            overflow-y: auto;
+        }
+        .pinyin {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .pos {
+            color: #e74c3c;
+            font-style: italic;
+            margin: 5px 0;
+        }
+        .translation {
+            color: #27ae60;
+            font-size: 1em;
+            line-height: 1.3;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            display: flex;
+            gap: 10px;
+        }
+        #searchInput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #searchBtn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #searchBtn:hover {
+            background-color: #2980b9;
+        }
+        .instructions {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <h1>汉语词汇闪卡 - 48个新词版</h1>
+    
+    <div class="instructions">点击卡片查看拼音、词性和英文翻译</div>
+    
+    <div class="controls">
+        <button class="btn" onclick="flipAllCards('front')">全部翻到正面</button>
+        <button class="btn" onclick="flipAllCards('back')">全部翻到背面</button>
+        <button class="btn" onclick="shuffleCards()">随机排序</button>
+    </div>
+    
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜索词汇...">
+        <button id="searchBtn">搜索</button>
+    </div>
+    
+    <div class="container" id="cardsContainer">
+        <!-- 厌倦 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">厌倦</div>
+                <div class="card-back">
+                    <div class="pinyin">yànjuàn</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to be tired of, to be weary of</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 厌恶 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">厌恶</div>
+                <div class="card-back">
+                    <div class="pinyin">yànwù</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to detest, to loathe</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 倘若 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">倘若</div>
+                <div class="card-back">
+                    <div class="pinyin">tǎngruò</div>
+                    <div class="pos">conj.</div>
+                    <div class="translation">if, supposing</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 发觉 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">发觉</div>
+                <div class="card-back">
+                    <div class="pinyin">fājué</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to find, to realize</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 承诺 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">承诺</div>
+                <div class="card-back">
+                    <div class="pinyin">chéngnuò</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to promise</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 草率 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">草率</div>
+                <div class="card-back">
+                    <div class="pinyin">cǎoshuài</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">careless, rash</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对抗 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">对抗</div>
+                <div class="card-back">
+                    <div class="pinyin">duìkàng</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to resist, to oppose</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 尝试 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">尝试</div>
+                <div class="card-back">
+                    <div class="pinyin">chángshì</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to try, to attempt</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 盲目 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">盲目</div>
+                <div class="card-back">
+                    <div class="pinyin">mángmù</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">blind, aimless</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 乘 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">乘</div>
+                <div class="card-back">
+                    <div class="pinyin">chéng</div>
+                    <div class="pos">prep.</div>
+                    <div class="translation">to avail oneself of, to take advantage of</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 喘气 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">喘气</div>
+                <div class="card-back">
+                    <div class="pinyin">chuǎn qì</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to breathe deeply, to pant, to gasp</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 饶恕 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">饶恕</div>
+                <div class="card-back">
+                    <div class="pinyin">ráoshù</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to forgive, to pardon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 强迫 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">强迫</div>
+                <div class="card-back">
+                    <div class="pinyin">qiǎngpò</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to force, to compel</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实施 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">实施</div>
+                <div class="card-back">
+                    <div class="pinyin">shíshī</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to put into effect, to implement</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 不料 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">不料</div>
+                <div class="card-back">
+                    <div class="pinyin">búliào</div>
+                    <div class="pos">conj.</div>
+                    <div class="translation">unexpectedly, to one's surprise</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 猛烈 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">猛烈</div>
+                <div class="card-back">
+                    <div class="pinyin">měngliè</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">fierce, violent</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 子弹 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">子弹</div>
+                <div class="card-back">
+                    <div class="pinyin">zǐdàn</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">bullet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 蔑视 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">蔑视</div>
+                <div class="card-back">
+                    <div class="pinyin">mièshì</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to despise, to look down upon</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 眼光 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">眼光</div>
+                <div class="card-back">
+                    <div class="pinyin">yǎnguāng</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">look in one's eyes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 盯 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">盯</div>
+                <div class="card-back">
+                    <div class="pinyin">dīng</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to fix one's eyes on, to stare at</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 愤怒 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">愤怒</div>
+                <div class="card-back">
+                    <div class="pinyin">fènnù</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">furious, indignant</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 愚蠢 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">愚蠢</div>
+                <div class="card-back">
+                    <div class="pinyin">yúchǔn</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">stupid, foolish</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 家伙 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">家伙</div>
+                <div class="card-back">
+                    <div class="pinyin">jiāhuo</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">fellow, chap, guy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 可恶 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">可恶</div>
+                <div class="card-back">
+                    <div class="pinyin">kěwù</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">hateful, detestable</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 耍 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">耍</div>
+                <div class="card-back">
+                    <div class="pinyin">shuǎ</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to play, to behave (in an unsavory manner)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 流氓 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">流氓</div>
+                <div class="card-back">
+                    <div class="pinyin">liúmáng</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">rogue, hoodlum, hooligan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 扁 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">扁</div>
+                <div class="card-back">
+                    <div class="pinyin">biǎn</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">flat</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 夕阳 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">夕阳</div>
+                <div class="card-back">
+                    <div class="pinyin">xīyáng</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">setting sun</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 留神 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">留神</div>
+                <div class="card-back">
+                    <div class="pinyin">liú shén</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to be careful, to look out</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 打猎 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">打猎</div>
+                <div class="card-back">
+                    <div class="pinyin">dǎ liè</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to hunt, to go hunting</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 不顾 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">不顾</div>
+                <div class="card-back">
+                    <div class="pinyin">búgù</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">in spite of, regardless of</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 挣扎 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">挣扎</div>
+                <div class="card-back">
+                    <div class="pinyin">zhēngzhá</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to struggle</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 窜 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">窜</div>
+                <div class="card-back">
+                    <div class="pinyin">cuàn</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to flee, to scurry</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 摆脱 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">摆脱</div>
+                <div class="card-back">
+                    <div class="pinyin">bǎituō</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to get rid of, to break away from</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 死亡 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">死亡</div>
+                <div class="card-back">
+                    <div class="pinyin">sǐwáng</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to die</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 恰巧 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">恰巧</div>
+                <div class="card-back">
+                    <div class="pinyin">qiàqiǎo</div>
+                    <div class="pos">adv.</div>
+                    <div class="translation">by chance</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 毫无 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">毫无</div>
+                <div class="card-back">
+                    <div class="pinyin">háo wú</div>
+                    <div class="pos">phrase</div>
+                    <div class="translation">not in the least, without</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 抵抗 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">抵抗</div>
+                <div class="card-back">
+                    <div class="pinyin">dǐkàng</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to resist, to fight against</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 部位 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">部位</div>
+                <div class="card-back">
+                    <div class="pinyin">bùwèi</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">(particularly of the human body) part, position</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 悲惨 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">悲惨</div>
+                <div class="card-back">
+                    <div class="pinyin">bēicǎn</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">miserable, tragic</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 未免 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">未免</div>
+                <div class="card-back">
+                    <div class="pinyin">wèimiǎn</div>
+                    <div class="pos">adv.</div>
+                    <div class="translation">rather, a bit too</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 残忍 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">残忍</div>
+                <div class="card-back">
+                    <div class="pinyin">cánrěn</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">cruel, ruthless</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 良心 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">良心</div>
+                <div class="card-back">
+                    <div class="pinyin">liángxīn</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">conscience</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 锋利 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">锋利</div>
+                <div class="card-back">
+                    <div class="pinyin">fēnglì</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">sharp, keen</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 缠绕 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">缠绕</div>
+                <div class="card-back">
+                    <div class="pinyin">chánrào</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to twine, to wind</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 耗费 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">耗费</div>
+                <div class="card-back">
+                    <div class="pinyin">hàofèi</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to use, to consume</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 缺口 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">缺口</div>
+                <div class="card-back">
+                    <div class="pinyin">quēkǒu</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">gap, breach, crack</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 举世瞩目 -->
+        <div class="card" onclick="toggleCard(this)">
+            <div class="card-inner">
+                <div class="card-front">举世瞩目</div>
+                <div class="card-back">
+                    <div class="pinyin">jǔshì zhǔmù</div>
+                    <div class="pos">idiom</div>
+                    <div class="translation">to attract worldwide attention, to draw the attention of the world</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // 搜索功能
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            searchCards();
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCards();
+            }
+        });
+
+        function searchCards() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach(card => {
+                const word = card.querySelector('.card-front').textContent;
+                const pinyin = card.querySelector('.pinyin').textContent;
+                const translation = card.querySelector('.translation').textContent;
+                
+                if (word.includes(searchTerm) || 
+                    pinyin.toLowerCase().includes(searchTerm) || 
+                    translation.toLowerCase().includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 批量翻转卡片
+        function flipAllCards(direction) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                if (direction === 'front') {
+                    card.classList.remove('flipped');
+                } else {
+                    card.classList.add('flipped');
+                }
+            });
+        }
+
+        // 随机排序卡片
+        function shuffleCards() {
+            const container = document.getElementById('cardsContainer');
+            const cards = Array.from(container.children);
+            
+            // 随机排序
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(cards[j]);
+            }
+        }
+    </script>
+</body>
+</html>
