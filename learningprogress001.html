@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习进度跟踪器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 30px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        h1 i {
+            color: #3498db;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .progress-tracker {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        
+        th {
+            text-align: left;
+            padding: 20px 15px;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        th:first-child {
+            width: 20%;
+            border-radius: 10px 0 0 0;
+        }
+        
+        th:nth-child(2) {
+            width: 40%;
+        }
+        
+        th:nth-child(3), th:nth-child(4) {
+            width: 20%;
+            text-align: center;
+        }
+        
+        td {
+            padding: 25px 15px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .item-name i {
+            font-size: 1.4rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f0f7ff;
+        }
+        
+        .progress-container {
+            height: 28px;
+            background-color: #ecf0f1;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 14px;
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg, 
+                rgba(255, 255, 255, 0.2) 25%, 
+                transparent 25%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.2) 50%, 
+                rgba(255, 255, 255, 0.2) 75%, 
+                transparent 75%, 
+                transparent
+            );
+            background-size: 35px 35px;
+            animation: moveStripes 2s linear infinite;
+        }
+        
+        @keyframes moveStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 35px 0; }
+        }
+        
+        .percentage {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .input-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 120px;
+            padding: 12px 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* 更新颜色方案 */
+        .color-1 { background: linear-gradient(90deg, #FFD700, #FFA500); } /* 明黄色渐变 */
+        .color-2 { background: linear-gradient(90deg, #FF69B4, #FF1493); } /* 粉红色渐变 */
+        .color-3 { background: linear-gradient(90deg, #FF8C00, #FF4500); } /* 橘色渐变（保持原样） */
+        .color-4 { background: linear-gradient(90deg, #7CFC00, #32CD32); } /* 草绿色渐变 */
+        .color-5 { background: linear-gradient(90deg, #00CED1, #1E90FF); } /* 湖蓝色渐变 */
+        
+        /* 更新图标颜色和背景 */
+        .color-1 i { 
+            background-color: #FFFACD; /* 浅黄色背景 */
+            color: #FFD700; /* 明黄色图标 */
+        }
+        
+        .color-2 i { 
+            background-color: #FFE4E1; /* 浅粉红背景 */
+            color: #FF69B4; /* 粉红色图标 */
+        }
+        
+        .color-3 i { 
+            background-color: #FFE4B5; /* 浅橙色背景 */
+            color: #FF8C00; /* 橙色图标 */
+        }
+        
+        .color-4 i { 
+            background-color: #F0FFF0; /* 浅绿色背景 */
+            color: #32CD32; /* 草绿色图标 */
+        }
+        
+        .color-5 i { 
+            background-color: #F0F8FF; /* 浅蓝色背景 */
+            color: #00CED1; /* 湖蓝色图标 */
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            th, td {
+                padding: 15px 10px;
+            }
+            
+            input {
+                width: 100px;
+                padding: 10px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .item-name {
+                font-size: 1rem;
+            }
+            
+            input {
+                width: 85px;
+                padding: 8px 10px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> 学习进度跟踪器</h1>
+            <p class="subtitle">在右侧填写当前进度和总数，进度条将自动更新。调整数值以查看实时变化效果。</p>
+        </header>
+        
+        <div class="progress-tracker">
+            <table>
+                <thead>
+                    <tr>
+                        <th>学习项目</th>
+                        <th>进度条</th>
+                        <th>当前进度</th>
+                        <th>总数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="item-name color-1">
+                                <i class="fas fa-book"></i>
+                                <span>词语 (words)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar color-1" id="progress-1" data-percentage="25">
+                                    <span class="percentage">25%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">已学数量</span>
+                                <input type="number" id="current-1" class="current-input" min="0" max="1000" value="25">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">总数</span>
+                                <input type="number" id="total-1" class="total-input" min="1" max="1000" value="100">
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="item-name color-2">
+                                <i class="fas fa-file-alt"></i>
+                                <span>课文 (texts)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar color-2" id="progress-2" data-percentage="56">
+                                    <span class="percentage">56%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">已学数量</span>
+                                <input type="number" id="current-2" class="current-input" min="0" max="1000" value="25">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">总数</span>
+                                <input type="number" id="total-2" class="total-input" min="1" max="1000" value="45">
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="item-name color-3">
+                                <i class="fas fa-language"></i>
+                                <span>语法 (grammar)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar color-3" id="progress-3" data-percentage="28">
+                                    <span class="percentage">28%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">已学数量</span>
+                                <input type="number" id="current-3" class="current-input" min="0" max="1000" value="14">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">总数</span>
+                                <input type="number" id="total-3" class="total-input" min="1" max="1000" value="50">
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="item-name color-4">
+                                <i class="fas fa-comments"></i>
+                                <span>说话 (speaking)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar color-4" id="progress-4" data-percentage="20">
+                                    <span class="percentage">20%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">已学数量</span>
+                                <input type="number" id="current-4" class="current-input" min="0" max="1000" value="3">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">总数</span>
+                                <input type="number" id="total-4" class="total-input" min="1" max="1000" value="15">
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="item-name color-5">
+                                <i class="fas fa-pen-fancy"></i>
+                                <span>写作 (writing)</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="progress-container">
+                                <div class="progress-bar color-5" id="progress-5" data-percentage="13">
+                                    <span class="percentage">13%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">已学数量</span>
+                                <input type="number" id="current-5" class="current-input" min="0" max="1000" value="2">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-label">总数</span>
+                                <input type="number" id="total-5" class="total-input" min="1" max="1000" value="15">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+            <p>1. 在右侧的"当前进度"列中输入您已学习的数量</p>
+            <p>2. 在"总数"列中输入该项目总共需要学习的数量</p>
+            <p>3. 进度条会根据您输入的数字自动更新宽度和百分比</p>
+            <p>4. 每个项目使用不同颜色的进度条，便于区分</p>
+        </div>
+        
+        <footer>
+            <p>学习进度跟踪器 &copy; 2023 | 设计用于可视化学习进度</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有输入框
+            const currentInputs = document.querySelectorAll('.current-input');
+            const totalInputs = document.querySelectorAll('.total-input');
+            
+            // 为每个输入框添加事件监听器
+            currentInputs.forEach(input => {
+                input.addEventListener('input', updateProgressBar);
+                input.addEventListener('change', updateProgressBar);
+            });
+            
+            totalInputs.forEach(input => {
+                input.addEventListener('input', updateProgressBar);
+                input.addEventListener('change', updateProgressBar);
+            });
+            
+            // 初始更新所有进度条
+            updateAllProgressBars();
+            
+            // 更新单个进度条的函数
+            function updateProgressBar(event) {
+                const input = event.target;
+                const row = input.closest('tr');
+                const rowId = row.rowIndex; // 获取行索引
+                
+                const currentInput = row.querySelector('.current-input');
+                const totalInput = row.querySelector('.total-input');
+                const progressBar = row.querySelector('.progress-bar');
+                const percentageSpan = progressBar.querySelector('.percentage');
+                
+                let current = parseFloat(currentInput.value) || 0;
+                let total = parseFloat(totalInput.value) || 1;
+                
+                // 确保当前值不大于总数
+                if (current > total) {
+                    current = total;
+                    currentInput.value = current;
+                }
+                
+                // 确保总数不为0
+                if (total <= 0) {
+                    total = 1;
+                    totalInput.value = total;
+                }
+                
+                // 计算百分比
+                const percentage = Math.round((current / total) * 100);
+                
+                // 更新进度条宽度和百分比显示
+                progressBar.style.width = `${percentage}%`;
+                progressBar.setAttribute('data-percentage', percentage);
+                percentageSpan.textContent = `${percentage}%`;
+                
+                // 添加一个视觉反馈效果
+                progressBar.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    progressBar.style.transform = 'scale(1)';
+                }, 150);
+            }
+            
+            // 更新所有进度条
+            function updateAllProgressBars() {
+                for (let i = 1; i <= 5; i++) {
+                    const currentInput = document.getElementById(`current-${i}`);
+                    const totalInput = document.getElementById(`total-${i}`);
+                    const progressBar = document.getElementById(`progress-${i}`);
+                    const percentageSpan = progressBar.querySelector('.percentage');
+                    
+                    let current = parseFloat(currentInput.value) || 0;
+                    let total = parseFloat(totalInput.value) || 1;
+                    
+                    // 确保当前值不大于总数
+                    if (current > total) {
+                        current = total;
+                        currentInput.value = current;
+                    }
+                    
+                    // 确保总数不为0
+                    if (total <= 0) {
+                        total = 1;
+                        totalInput.value = total;
+                    }
+                    
+                    // 计算百分比
+                    const percentage = Math.round((current / total) * 100);
+                    
+                    // 更新进度条宽度和百分比显示
+                    progressBar.style.width = `${percentage}%`;
+                    progressBar.setAttribute('data-percentage', percentage);
+                    percentageSpan.textContent = `${percentage}%`;
+                }
+            }
+            
+            // 添加示例按钮（可选功能）
+            const instructionsDiv = document.querySelector('.instructions');
+            const exampleButton = document.createElement('button');
+            exampleButton.innerHTML = '<i class="fas fa-redo"></i> 重置为示例数据';
+            exampleButton.style.cssText = `
+                display: block;
+                margin: 15px auto 0;
+                padding: 10px 20px;
+                background: linear-gradient(90deg, #3498db, #2ecc71);
+                color: white;
+                border: none;
+                border-radius: 50px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            `;
+            
+            exampleButton.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 6px 15px rgba(52, 152, 219, 0.4)';
+            });
+            
+            exampleButton.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 10px rgba(52, 152, 219, 0.3)';
+            });
+            
+            exampleButton.addEventListener('click', function() {
+                // 示例数据
+                const exampleData = [
+                    {current: 25, total: 100},
+                    {current: 25, total: 45},
+                    {current: 14, total: 50},
+                    {current: 3, total: 15},
+                    {current: 2, total: 15}
+                ];
+                
+                // 设置输入框的值
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`current-${i}`).value = exampleData[i-1].current;
+                    document.getElementById(`total-${i}`).value = exampleData[i-1].total;
+                }
+                
+                // 更新所有进度条
+                updateAllProgressBars();
+                
+                // 添加成功反馈
+                this.innerHTML = '<i class="fas fa-check"></i> 已重置为示例数据';
+                this.style.background = 'linear-gradient(90deg, #2ecc71, #27ae60)';
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-redo"></i> 重置为示例数据';
+                    this.style.background = 'linear-gradient(90deg, #3498db, #2ecc71)';
+                }, 1500);
+            });
+            
+            instructionsDiv.appendChild(exampleButton);
+        });
+    </script>
+</body>
+</html>
