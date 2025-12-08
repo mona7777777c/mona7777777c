@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HSK3级汉语词汇闪卡 - 第十部分</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            width: 200px;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-front {
+            background: #f8f9fa;
+            font-size: 2.8em;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .card-back {
+            background: #fff;
+            transform: rotateY(180deg);
+            flex-direction: column;
+            text-align: center;
+            overflow-y: auto;
+        }
+        .pinyin {
+            font-size: 1.6em;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        .pos {
+            color: #e74c3c;
+            font-style: italic;
+            margin: 5px 0;
+        }
+        .translation {
+            color: #27ae60;
+            font-size: 1.1em;
+            line-height: 1.3;
+        }
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            display: flex;
+            gap: 10px;
+        }
+        #searchInput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        #searchBtn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #searchBtn:hover {
+            background-color: #2980b9;
+        }
+        .instructions {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background-color: #27ae60;
+        }
+        .audio-btn {
+            margin-top: 10px;
+            padding: 6px 12px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .audio-btn:hover {
+            background-color: #8e44ad;
+        }
+        .stop-btn {
+            background-color: #e74c3c;
+        }
+        .stop-btn:hover {
+            background-color: #c0392b;
+        }
+        .counter {
+            text-align: center;
+            margin-top: 10px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HSK3级汉语词汇闪卡 - 第十部分</h1>
+    
+    <div class="instructions">点击卡片查看拼音、词性和英文翻译（点击卡片会自动朗读发音）</div>
+    
+    <div class="controls">
+        <button class="btn" onclick="flipAllCards('front')">全部翻到正面</button>
+        <button class="btn" onclick="flipAllCards('back')">全部翻到背面</button>
+        <button class="btn" onclick="shuffleCards()">随机排序</button>
+        <button class="btn stop-btn" onclick="stopAllSpeech()">停止所有朗读</button>
+    </div>
+    
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜索词汇、拼音或英文翻译...">
+        <button id="searchBtn">搜索</button>
+    </div>
+    
+    <div class="counter" id="cardCounter">显示 15 个词汇中的 15 个</div>
+    
+    <div class="container" id="cardsContainer">
+        <!-- 1. 个子 -->
+        <div class="card" onclick="toggleCard(this, '个子')">
+            <div class="card-inner">
+                <div class="card-front">个子</div>
+                <div class="card-back">
+                    <div class="pinyin">gèzi</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">height, stature</div>
+                    <button class="audio-btn" onclick="speakChinese('个子', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 矮 -->
+        <div class="card" onclick="toggleCard(this, '矮')">
+            <div class="card-inner">
+                <div class="card-front">矮</div>
+                <div class="card-back">
+                    <div class="pinyin">ǎi</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">short</div>
+                    <button class="audio-btn" onclick="speakChinese('矮', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 历史 -->
+        <div class="card" onclick="toggleCard(this, '历史')">
+            <div class="card-inner">
+                <div class="card-front">历史</div>
+                <div class="card-back">
+                    <div class="pinyin">lìshǐ</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">history</div>
+                    <button class="audio-btn" onclick="speakChinese('历史', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 体育 -->
+        <div class="card" onclick="toggleCard(this, '体育')">
+            <div class="card-inner">
+                <div class="card-front">体育</div>
+                <div class="card-back">
+                    <div class="pinyin">tǐyù</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">P.E., sports</div>
+                    <button class="audio-btn" onclick="speakChinese('体育', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 数学 -->
+        <div class="card" onclick="toggleCard(this, '数学')">
+            <div class="card-inner">
+                <div class="card-front">数学</div>
+                <div class="card-back">
+                    <div class="pinyin">shùxué</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">maths</div>
+                    <button class="audio-btn" onclick="speakChinese('数学', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 方便 -->
+        <div class="card" onclick="toggleCard(this, '方便')">
+            <div class="card-inner">
+                <div class="card-front">方便</div>
+                <div class="card-back">
+                    <div class="pinyin">fāngbiàn</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">convenient</div>
+                    <button class="audio-btn" onclick="speakChinese('方便', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. 自行车 -->
+        <div class="card" onclick="toggleCard(this, '自行车')">
+            <div class="card-inner">
+                <div class="card-front">自行车</div>
+                <div class="card-back">
+                    <div class="pinyin">zìxíngchē</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">bicycle</div>
+                    <button class="audio-btn" onclick="speakChinese('自行车', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. 骑 -->
+        <div class="card" onclick="toggleCard(this, '骑')">
+            <div class="card-inner">
+                <div class="card-front">骑</div>
+                <div class="card-back">
+                    <div class="pinyin">qí</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to ride</div>
+                    <button class="audio-btn" onclick="speakChinese('骑', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. 旧 -->
+        <div class="card" onclick="toggleCard(this, '旧')">
+            <div class="card-inner">
+                <div class="card-front">旧</div>
+                <div class="card-back">
+                    <div class="pinyin">jiù</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">old, used, worn</div>
+                    <button class="audio-btn" onclick="speakChinese('旧', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. 换 -->
+        <div class="card" onclick="toggleCard(this, '换')">
+            <div class="card-inner">
+                <div class="card-front">换</div>
+                <div class="card-back">
+                    <div class="pinyin">huàn</div>
+                    <div class="pos">v.</div>
+                    <div class="translation">to change, to substitute</div>
+                    <button class="audio-btn" onclick="speakChinese('换', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. 地方 -->
+        <div class="card" onclick="toggleCard(this, '地方')">
+            <div class="card-inner">
+                <div class="card-front">地方</div>
+                <div class="card-back">
+                    <div class="pinyin">dìfang</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">place</div>
+                    <button class="audio-btn" onclick="speakChinese('地方', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12. 中介 -->
+        <div class="card" onclick="toggleCard(this, '中介')">
+            <div class="card-inner">
+                <div class="card-front">中介</div>
+                <div class="card-back">
+                    <div class="pinyin">zhōngjiè</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">intermediary, agent</div>
+                    <button class="audio-btn" onclick="speakChinese('中介', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13. 主要 -->
+        <div class="card" onclick="toggleCard(this, '主要')">
+            <div class="card-inner">
+                <div class="card-front">主要</div>
+                <div class="card-back">
+                    <div class="pinyin">zhǔyào</div>
+                    <div class="pos">adj.</div>
+                    <div class="translation">main</div>
+                    <button class="audio-btn" onclick="speakChinese('主要', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14. 环境 -->
+        <div class="card" onclick="toggleCard(this, '环境')">
+            <div class="card-inner">
+                <div class="card-front">环境</div>
+                <div class="card-back">
+                    <div class="pinyin">huánjìng</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">environment</div>
+                    <button class="audio-btn" onclick="speakChinese('环境', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15. 附近 -->
+        <div class="card" onclick="toggleCard(this, '附近')">
+            <div class="card-inner">
+                <div class="card-front">附近</div>
+                <div class="card-back">
+                    <div class="pinyin">fùjìn</div>
+                    <div class="pos">n.</div>
+                    <div class="translation">nearby, vicinity</div>
+                    <button class="audio-btn" onclick="speakChinese('附近', event)">🔊 再次朗读</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 语音合成对象
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        
+        // 卡片翻转并朗读
+        function toggleCard(card, chineseWord) {
+            // 翻转卡片
+            card.classList.toggle('flipped');
+            
+            // 朗读中文词汇
+            speakChinese(chineseWord);
+        }
+        
+        // 中文朗读函数
+        function speakChinese(text, event = null) {
+            // 防止事件冒泡（如果是从按钮触发的）
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            // 停止当前正在朗读的语音
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            // 创建新的语音实例
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            
+            // 设置语言为中文
+            currentUtterance.lang = 'zh-CN';
+            
+            // 设置语速（0.1-10，默认1）
+            currentUtterance.rate = 0.9;
+            
+            // 设置音调（0-2，默认1）
+            currentUtterance.pitch = 1;
+            
+            // 设置音量（0-1，默认1）
+            currentUtterance.volume = 1;
+            
+            // 开始朗读
+            speechSynthesis.speak(currentUtterance);
+            
+            // 朗读结束后的回调
+            currentUtterance.onend = function() {
+                currentUtterance = null;
+            };
+            
+            // 错误处理
+            currentUtterance.onerror = function(event) {
+                console.error('语音合成错误:', event);
+                currentUtterance = null;
+            };
+        }
+        
+        // 停止所有语音朗读
+        function stopAllSpeech() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+        }
+        
+        // 搜索功能
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            searchCards();
+        });
+        
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCards();
+            }
+        });
+        
+        // 实时搜索
+        document.getElementById('searchInput').addEventListener('input', function() {
+            searchCards();
+        });
+        
+        function searchCards() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const word = card.querySelector('.card-front').textContent;
+                const pinyin = card.querySelector('.pinyin').textContent;
+                const translation = card.querySelector('.translation').textContent;
+                
+                if (searchTerm === '' || 
+                    word.includes(searchTerm) || 
+                    pinyin.toLowerCase().includes(searchTerm) || 
+                    translation.toLowerCase().includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 更新计数
+            document.getElementById('cardCounter').textContent = 
+                `显示 ${visibleCount} 个词汇中的 ${cards.length} 个`;
+        }
+        
+        // 批量翻转卡片
+        function flipAllCards(direction) {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                if (direction === 'front') {
+                    card.classList.remove('flipped');
+                } else {
+                    card.classList.add('flipped');
+                }
+            });
+        }
+        
+        // 随机排序卡片
+        function shuffleCards() {
+            const container = document.getElementById('cardsContainer');
+            const cards = Array.from(container.children);
+            
+            // 随机排序
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(cards[j]);
+            }
+        }
+        
+        // 页面加载时检查浏览器是否支持语音合成
+        window.onload = function() {
+            if (!('speechSynthesis' in window)) {
+                alert("您的浏览器不支持语音合成功能，部分功能可能无法使用。");
+            }
+            
+            // 初始更新卡片计数
+            document.getElementById('cardCounter').textContent = 
+                `显示 ${document.querySelectorAll('.card').length} 个词汇中的 ${document.querySelectorAll('.card').length} 个`;
+        };
+        
+        // 键盘快捷键支持
+        document.addEventListener('keydown', function(e) {
+            // 空格键：停止所有语音
+            if (e.code === 'Space') {
+                e.preventDefault();
+                stopAllSpeech();
+            }
+            // Esc键：清除搜索
+            if (e.code === 'Escape') {
+                document.getElementById('searchInput').value = '';
+                searchCards();
+            }
+        });
+    </script>
+</body>
+</html>
